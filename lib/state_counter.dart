@@ -20,13 +20,12 @@ class _StateCounterState extends State<StateCounter> {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        Expanded(child: Text('State Counter')),
-        Expanded(child: Text('Times: $_counter')),
+        SizedBox(width: 120.0, child: Text('State Counter')),
         Expanded(
-          child: RaisedButton(
-            child: Text('Add'),
-            onPressed: _incrementCounter,
-          ),
+            child: Text('Times: $_counter')),
+        RaisedButton(
+          child: Text('Add'),
+          onPressed: _incrementCounter,
         )
       ],
     );

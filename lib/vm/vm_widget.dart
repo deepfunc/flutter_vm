@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 abstract class VMWidget extends StatefulWidget {
   Map<String, dynamic> _data;
+  dynamic data;
 
   VMWidget({Key key}) : super(key: key) {
 //    print('VMWidget()');
@@ -11,14 +12,15 @@ abstract class VMWidget extends StatefulWidget {
 
   Map<String, dynamic> initData();
 
-  Widget build(BuildContext context, dynamic data);
+  Widget build(BuildContext context);
 
   @override
   _VMState createState() {
 //    print('VMWidget createState()');
     _data = initData();
-    var state = _VMState(_data);
-    return state;
+    return _VMState(_data);
+//    var state = _VMState(_data);
+//    return state;
   }
 }
 
@@ -26,14 +28,17 @@ class _VMState extends State<VMWidget> {
   Map<String, dynamic> _data;
   dynamic data;
 
-  _VMState(Map<String, dynamic> data): super() {
+  _VMState(Map<String, dynamic> data) : super() {
     this._data = data;
     this.data = VMData(this._data, this);
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.build(context, data);
+    if (widget.data == null) {
+      widget.data = data;
+    }
+    return widget.build(context);
   }
 
   void update() {
@@ -47,19 +52,32 @@ class VMData {
   _VMState _state;
 
   VMData(Map<String, dynamic> data, _VMState state) {
-    this._data = Map();
-    data.forEach((k, v) => _data[new Symbol(k).toString()] = v);
+    this._data = data;
     this._state = state;
+//    data.forEach((k, v) => _data[new Symbol(k).toString()] = v);
 //    data.forEach((k, v) {
 //      print('k: ${new Symbol(k).toString()}');
 //    });
 //    print('_data: $_data');
   }
 
+  String getGetterMemberName(Symbol memberName) {
+    String ret = memberName.toString();
+    ret = ret.substring(8, ret.length - 2);
+    return ret;
+  }
+
+  String getSetterMemberName(Symbol memberName) {
+    String ret = memberName.toString();
+    ret = ret.substring(8, ret.length - 3);
+    return ret;
+  }
+
   @override
   noSuchMethod(Invocation invocation) {
     if (invocation.isGetter) {
-      var ret = _data[invocation.memberName.toString()];
+      String memberName = getGetterMemberName(invocation.memberName);
+      var ret = _data[memberName];
       if (ret != null) {
         return ret;
       } else {
@@ -67,13 +85,14 @@ class VMData {
       }
     }
     if (invocation.isSetter) {
-      _data[invocation.memberName.toString().replaceAll('=', '')] =
-          invocation.positionalArguments.first;
+      String memberName = getSetterMemberName(invocation.memberName);
+      _data[memberName] = invocation.positionalArguments.first;
       if (_state != null) {
         _state.update();
-      } else {
-        print('_state is null');
       }
+//      if (_state == null) {
+//        print('_state is null');
+//      }
     } else {
       super.noSuchMethod(invocation);
     }

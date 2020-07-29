@@ -8,18 +8,17 @@ class VMCounter extends VMWidget {
   }
 
   @override
-  Widget build(BuildContext context, dynamic data) {
+  Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        Expanded(child: Text('VM Counter')),
-        Expanded(child: Text('Times: ${data.counter}')),
+        SizedBox(width: 120.0, child: Text('VM Counter')),
         Expanded(
-          child: RaisedButton(
-              child: Text('Add'),
-              onPressed: () {
-                data.counter++;
-              }),
-        )
+            child: Text('Times: ${data.counter}')),
+        RaisedButton(
+            child: Text('Add'),
+            onPressed: () {
+              data.counter++;
+            })
       ],
     );
   }
